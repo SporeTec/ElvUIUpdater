@@ -30,12 +30,14 @@ if errorlevel 1 (
 	del elvui.html
 	exit
 )
+
 powershell -Command "Select-String -Path elvui.html -Pattern '<b class=""Premium"""">([0-9]+.[0-9]+)</b>' -AllMatches | %% { $_.Matches.Groups[1] } | %% { $_.Value } | Out-File tmpfile -Encoding ascii -NoNewline"
 if errorlevel 1 (
 	echo Error appeared, try again
 	del tmpfile
 	exit
 )
+
 set /p version= < tmpfile
 del tmpfile
 
@@ -49,6 +51,11 @@ if %versionOLD% LSS %version% (
 		)
 	)
 	powershell.exe -NoP -NonI -Command "Expand-Archive -Path '%CD%\elvui-%version%.zip' -DestinationPath '%wowPath%' -Force"
+	if errorlevel 1 (
+			echo Error appeared, try again
+			del elvui-%version%.zip
+			exit
+	)
 	echo Installed ElvUI version %version% succesfully
 	PAUSE
 	exit
